@@ -5,11 +5,19 @@ import Qs from 'qs'
 export function getRecommend () {
   const url = `${BASE_URL}/getRecommend`
   const data = {
-    platform: 'h5',
-    uin: 0,
-    needNewCode: 1
+    loginUin: 0,
+    hostUin: 0,
+    platform: 'yqq.json',
+    needNewCode: 0,
+    data: {
+      'focus': {
+        'module': 'QQMusic.MusichallServer',
+        'method': 'GetFocus',
+        'param': {}
+      }
+    }
   }
-  return axios.post(url, Qs.stringify(data)).then(res => {
+  return axios.post(url, data).then((res) => {
     return Promise.resolve(res.data)
   })
 }
