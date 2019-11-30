@@ -6,9 +6,7 @@
                 <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
                     <sliber>
                         <div v-for="(item,index) in recommends" :key="index">
-                            <a :href="item.linkUrl">
-                                <img @load="loadImage" class="needsclick" :src="item.picUrl">
-                            </a>
+                            <img @load="loadImage" class="needsclick" :src="item.pic_info.url">
                         </div>
                     </sliber>
                 </div>
@@ -66,7 +64,10 @@ export default {
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
-          this.recommends = res.data.slider
+          const focus = res.focus.data.content
+          for (let i = 0; i < 5; i++) {
+            this.recommends[i] = focus[i]
+          }
         }
       })
     },
