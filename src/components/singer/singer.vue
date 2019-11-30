@@ -35,7 +35,7 @@ export default {
     _getSingerList () {
       getSingerList().then((res) => {
         if (res.code === ERR_OK) {
-          this.singers = this._normalizeSinger(res.data.list)
+          this.singers = this._normalizeSinger(res.data)
         }
       })
     },
@@ -49,11 +49,11 @@ export default {
       list.forEach((item, index) => {
         if (index < HOT_SINGER_LEN) {
           map.hot.items.push(new Singer({
-            name: item.Fsinger_name,
-            id: item.Fsinger_mid
+            name: item.singerName,
+            id: item.singerMid
           }))
         }
-        const key = item.Findex
+        const key = item.index
         if (!map[key]) {
           map[key] = {
             title: key,
@@ -61,8 +61,8 @@ export default {
           }
         }
         map[key].items.push(new Singer({
-          name: item.Fsinger_name,
-          id: item.Fsinger_mid
+          name: item.singerName,
+          id: item.singerMid
         }))
       })
       // 处理map 得到有序列表

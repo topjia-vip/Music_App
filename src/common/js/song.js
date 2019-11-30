@@ -21,8 +21,8 @@ export default class Song {
 
     return new Promise((resolve) => {
       getLyric(this.mid).then((res) => {
-        if (res.retcode === ERR_OK) {
-          this.lyric = Base64.decode(res.lyric)
+        if (res.code === ERR_OK) {
+          this.lyric = Base64.decode(res.data.lyric)
           resolve(this.lyric)
         }
       })
@@ -30,51 +30,15 @@ export default class Song {
   }
 }
 
-export function createSong (musicData, purl) {
-  let image
-  if (!musicData.albumname) {
-    image = 'https://y.gtimg.cn/mediastyle/yqq/extra/player_cover.png?max_age=31536000'
-  } else {
-    image = `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`
-  }
+export function createSong (song) {
   return new Song({
-    id: musicData.songid,
-    mid: musicData.songmid,
-    singer: filterSinger(musicData.singer),
-    name: musicData.songname,
-    album: musicData.albumname,
-    duration: musicData.interval,
-    image,
-    url: `http://58.49.111.153/amobile.music.tc.qq.com/${purl}`
+    id: song.id,
+    mid: song.mid,
+    singer: song.singer,
+    name: song.name,
+    album: song.album,
+    duration: song.duration,
+    image: song.image,
+    url: song.url
   })
-}
-
-export function createCdSong (musicData, purl) {
-  let image
-  if (!musicData.album.name) {
-    image = 'https://y.gtimg.cn/mediastyle/yqq/extra/player_cover.png?max_age=31536000'
-  } else {
-    image = `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.album.mid}.jpg?max_age=2592000`
-  }
-  return new Song({
-    id: musicData.id,
-    mid: musicData.mid,
-    singer: filterSinger(musicData.singer),
-    name: musicData.name,
-    album: musicData.album.name,
-    duration: musicData.interval,
-    image,
-    url: `http://58.49.111.153/amobile.music.tc.qq.com/${purl}`
-  })
-}
-
-function filterSinger (singer) {
-  let ret = []
-  if (!singer) {
-    return ''
-  }
-  singer.forEach((s) => {
-    ret.push(s.name)
-  })
-  return ret.join('/')
 }

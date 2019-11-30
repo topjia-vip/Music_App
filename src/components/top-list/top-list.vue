@@ -11,7 +11,6 @@ import MusicList from '../../components/music-list/music-list'
 import { getMusicList } from '../../api/rank'
 import { ERR_OK } from '../../api/config'
 import { createSong } from '../../common/js/song'
-import { getSongPurl } from '../../api/getSongPurl'
 
 export default {
   name: 'toplist',
@@ -46,24 +45,14 @@ export default {
       }
       getMusicList(this.topList.id).then((res) => {
         if (res.code === ERR_OK) {
-          this.songs = this._normalizeSongs(res.songlist)
+          this.songs = this._normalizeSongs(res.data)
         }
       })
     },
     _normalizeSongs (list) {
       let ret = []
-      let midurlinfo = []
-      getSongPurl(list).then(res => {
-        if (res.code === ERR_OK) {
-          midurlinfo = res.req_0.data.midurlinfo
-        }
-        for (let i = 0; i < midurlinfo.length; i++) {
-          let { data } = list[i]
-          let purl = midurlinfo[i].purl
-          if (purl) {
-            ret.push(createSong(data, purl))
-          }
-        }
+      list.forEach((song) => {
+        ret.push(createSong(song))
       })
       return ret
     }

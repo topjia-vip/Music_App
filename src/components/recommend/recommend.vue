@@ -6,7 +6,9 @@
                 <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
                     <sliber>
                         <div v-for="(item,index) in recommends" :key="index">
-                            <img @load="loadImage" class="needsclick" :src="item.pic_info.url">
+                            <a :href="item.jumpInfo">
+                                <img @load="loadImage" class="needsclick" :src="item.picInfo">
+                            </a>
                         </div>
                     </sliber>
                 </div>
@@ -15,11 +17,11 @@
                     <ul>
                         <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index" class="item">
                             <div class="icon">
-                                <img width="60" height="60" v-lazy="item.imgurl"/>
+                                <img width="60" height="60" v-lazy="item.imgUrl"/>
                             </div>
                             <div class="text">
-                                <h2 class="name" v-html="item.creator.name"></h2>
-                                <p class="desc" v-html="item.dissname"></p>
+                                <h2 class="name" v-html="item.name"></h2>
+                                <p class="desc" v-html="item.dissName"></p>
                             </div>
                         </li>
                     </ul>
@@ -64,17 +66,14 @@ export default {
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
-          const focus = res.focus.data.content
-          for (let i = 0; i < 5; i++) {
-            this.recommends[i] = focus[i]
-          }
+          this.recommends = res.data
         }
       })
     },
     _getDiscList () {
       getDiscList().then((res) => {
         if (res.code === ERR_OK) {
-          this.discList = res.data.list
+          this.discList = res.list
         }
       })
     },
@@ -91,7 +90,7 @@ export default {
     },
     selectItem (item) {
       this.$router.push({
-        path: `/recommend/${item.dissid}`
+        path: `/recommend/${item.dissId}`
       })
       this.setDisc(item)
     },

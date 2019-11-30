@@ -27,7 +27,6 @@
 <script type="text/ecmascript-6">
 import { search } from '../../api/search'
 import { ERR_OK } from '../../api/config'
-import { getSongPurl } from '../../api/getSongPurl'
 import { createSong } from '../../common/js/song'
 import Scroll from '../../base/scroll/scroll'
 import Loading from '../../base/loading/loading'
@@ -88,18 +87,18 @@ export default {
       })
     },
     _checkMore (data) {
-      const song = data.song
+      const song = data[0].songs
       if ((!song.list.length || (song.curnum + song.curpage * perpage) > song.totalnum)) {
         this.hasMore = false
       }
     },
     _genResult: async function (data) {
       let ret = []
-      if (data.zhida && data.zhida.zhida_singer) {
-        ret.push({ ...data.zhida, ...{ type: TYPE_SINGER } })
+      if (data[0].zhida && data[0].zhida.zhida_singer) {
+        ret.push({ ...data[0].zhida, ...{ type: TYPE_SINGER } })
       }
-      if (data.song) {
-        const res = await this._normalizeSongs(data.song.list)
+      if (data[1].length > 0) {
+        const res = await this._normalizeSongs(data[1])
         ret = ret.concat(res)
       }
       return ret
@@ -107,17 +106,11 @@ export default {
     listScroll () {
       this.$emit('listScroll')
     },
-    _normalizeSongs: async function (list) {
+    _normalizeSongs (list) {
       let ret = []
-      let midurlinfo = []
-      const res = await getSongPurl(list)
-      if (res.code === ERR_OK) {
-        midurlinfo = res.req_0.data.midurlinfo
-      }
-      for (let i = 0; i < midurlinfo.length; i++) {
-        let purl = midurlinfo[i].purl
-        ret.push(createSong(list[i], purl))
-      }
+      list.forEach((song) => {
+        ret.push(createSong(song))
+      })
       return ret
     },
     getIconCls (item) {
