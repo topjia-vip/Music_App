@@ -1,7 +1,9 @@
 <template>
     <!--歌手页面模块-->
-    <div class="singer" ref="singers">
-        <list-view @select="selectSinger" :data="singers" ref="list"/>
+    <div class="singer">
+        <div ref="singers">
+            <list-view @select="selectSinger" :data="singers" ref="list"/>
+        </div>
         <router-view/>
     </div>
 </template>
