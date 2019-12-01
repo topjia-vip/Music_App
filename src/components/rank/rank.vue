@@ -1,7 +1,7 @@
 <template>
-    <div class="rank">
-        <div ref="rank">
-            <scroll class="toplist" ref="toplist" :data="topList">
+    <div class="rank" ref="rank">
+        <scroll class="toplist" ref="toplist" :data="topList">
+            <div ref="div">
                 <ul>
                     <li class="item" v-for="(item,index) in topList" :key="index" @click="selectItem(item)">
                         <div class="icon">
@@ -15,12 +15,12 @@
                         </ul>
                     </li>
                 </ul>
-                <div class="loading-container" v-show="!topList.length">
-                    <loading/>
-                </div>
-            </scroll>
-        </div>
-        <router-view></router-view>
+            </div>
+            <div class="loading-container" v-show="!topList.length">
+                <loading/>
+            </div>
+        </scroll>
+        <router-view/>
     </div>
 </template>
 
@@ -49,14 +49,14 @@ export default {
   methods: {
     _initTouch () {
       var router = this.$router
-      this.$refs.rank.addEventListener('touchstart', (e) => {
+      this.$refs.div.addEventListener('touchstart', (e) => {
         this.startX = e.touches[0].pageX
       })
-      this.$refs.rank.addEventListener('touchmove', (e) => {
+      this.$refs.div.addEventListener('touchmove', (e) => {
         var moveEndX = e.changedTouches[0].pageX
         this.X = moveEndX - this.startX
       })
-      this.$refs.rank.addEventListener('touchend', (e) => {
+      this.$refs.div.addEventListener('touchend', (e) => {
         if (this.X < -100) {
           router.push('/search')
         }
@@ -78,6 +78,7 @@ export default {
       this.$refs.toplist.refresh()
     },
     selectItem (item) {
+      this.flag = true
       this.$router.push({
         path: `/rank/${item.id}`
       })
