@@ -3,31 +3,33 @@
         <div class="search-box-wrapper">
             <search-box ref="searchBox" @query="onQueryChange"></search-box>
         </div>
-        <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-            <scroll :refresh-delay="refreshDelay" ref="shortcut" class="shortcut" :data="shortcut">
-                <div>
-                    <div class="hot-key">
-                        <h1 class="title">热门搜索</h1>
-                        <ul>
-                            <li @click="addQuery(item.hotKey)" class="item" v-for="(item,index) in hotKey"
-                                :key="index">
-                                {{item.hotKey}}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="search-history" v-show="searchHistory.length">
-                        <h1 class="title">
-                            <span class="text">搜索历史</span>
-                            <span @click="showConfirm" class="clear">
+        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="wrapper">
+            <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+                <scroll :refresh-delay="refreshDelay" ref="shortcut" class="shortcut" :data="shortcut">
+                    <div>
+                        <div class="hot-key">
+                            <h1 class="title">热门搜索</h1>
+                            <ul>
+                                <li @click="addQuery(item.hotKey)" class="item" v-for="(item,index) in hotKey"
+                                    :key="index">
+                                    {{item.hotKey}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="search-history" v-show="searchHistory.length">
+                            <h1 class="title">
+                                <span class="text">搜索历史</span>
+                                <span @click="showConfirm" class="clear">
                              <i class="icon-clear"></i>
                         </span>
-                        </h1>
-                        <search-list @delete="deleteSearchHistory" @select="addQuery"
-                                     :searches="searchHistory"></search-list>
+                            </h1>
+                            <search-list @delete="deleteSearchHistory" @select="addQuery"
+                                         :searches="searchHistory"></search-list>
+                        </div>
                     </div>
-                </div>
-            </scroll>
-        </div>
+                </scroll>
+            </div>
+        </v-touch>
         <div ref="searchResult" class="search-result" v-show="query">
             <suggest ref="suggest" @select="saveSearch" @listScroll="blurInput" :query="query"/>
         </div>
@@ -54,9 +56,6 @@ export default {
       hotKey: []
     }
   },
-  mounted () {
-    this._initTouch()
-  },
   computed: {
     shortcut () {
       return this.hotKey.concat(this.searchHistory)
@@ -73,21 +72,6 @@ export default {
     this._getHotKey()
   },
   methods: {
-    _initTouch () {
-      var router = this.$router
-      this.$refs.shortcutWrapper.addEventListener('touchstart', (e) => {
-        this.startX = e.touches[0].pageX
-      })
-      this.$refs.shortcutWrapper.addEventListener('touchmove', (e) => {
-        var moveEndX = e.changedTouches[0].pageX
-        this.X = moveEndX - this.startX
-      })
-      this.$refs.shortcutWrapper.addEventListener('touchend', (e) => {
-        if (this.X > 100) {
-          router.push('/rank')
-        }
-      })
-    },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
 
@@ -106,6 +90,9 @@ export default {
     },
     showConfirm () {
       this.$refs.confirm.show()
+    },
+    swiperright: function () {
+      this.$router.push({ 'path': '/rank' })
     },
     ...mapActions([
       'clearSearchHistory'

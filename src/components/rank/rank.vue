@@ -1,7 +1,7 @@
 <template>
     <div class="rank" ref="rank">
-        <scroll class="toplist" ref="toplist" :data="topList">
-            <div ref="div">
+        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="rank">
+            <scroll class="toplist" ref="toplist" :data="topList">
                 <ul>
                     <li class="item" v-for="(item,index) in topList" :key="index" @click="selectItem(item)">
                         <div class="icon">
@@ -15,11 +15,11 @@
                         </ul>
                     </li>
                 </ul>
-            </div>
-            <div class="loading-container" v-show="!topList.length">
-                <loading/>
-            </div>
-        </scroll>
+                <div class="loading-container" v-show="!topList.length">
+                    <loading/>
+                </div>
+            </scroll>
+        </v-touch>
         <router-view/>
     </div>
 </template>
@@ -40,31 +40,10 @@ export default {
       topList: []
     }
   },
-  mounted () {
-    this._initTouch()
-  },
   created () {
     this._getTopList()
   },
   methods: {
-    _initTouch () {
-      var router = this.$router
-      this.$refs.div.addEventListener('touchstart', (e) => {
-        this.startX = e.touches[0].pageX
-      })
-      this.$refs.div.addEventListener('touchmove', (e) => {
-        var moveEndX = e.changedTouches[0].pageX
-        this.X = moveEndX - this.startX
-      })
-      this.$refs.div.addEventListener('touchend', (e) => {
-        if (this.X < -100) {
-          router.push('/search')
-        }
-        if (this.X > 100) {
-          router.push('/singer')
-        }
-      })
-    },
     _getTopList () {
       getTopList().then(res => {
         if (res.code === ERR_OK) {
@@ -83,6 +62,12 @@ export default {
         path: `/rank/${item.id}`
       })
       this.setTopList(item)
+    },
+    swiperleft: function () {
+      this.$router.push({ 'path': '/search' })
+    },
+    swiperright: function () {
+      this.$router.push({ 'path': '/singer' })
     },
     ...mapMutations({
       setTopList: 'SET_TOP_LIST'

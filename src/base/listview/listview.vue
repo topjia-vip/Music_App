@@ -7,20 +7,18 @@
             class="listview"
             ref="listview"
     >
-        <div ref="singersTouch">
-            <ul>
-                <li v-for="(group,index) in data" :key="index" class="list-group" ref="listGroup">
-                    <h2 class="list-group-title">{{group.title}}</h2>
-                    <uL>
-                        <li @click="selectItem(item)" v-for="(item,index) in group.items" :key="index"
-                            class="list-group-item">
-                            <img class="avatar" v-lazy="item.avatar">
-                            <span class="name">{{item.name}}</span>
-                        </li>
-                    </uL>
-                </li>
-            </ul>
-        </div>
+        <ul>
+            <li v-for="(group,index) in data" :key="index" class="list-group" ref="listGroup">
+                <h2 class="list-group-title">{{group.title}}</h2>
+                <uL>
+                    <li @click="selectItem(item)" v-for="(item,index) in group.items" :key="index"
+                        class="list-group-item">
+                        <img class="avatar" v-lazy="item.avatar">
+                        <span class="name">{{item.name}}</span>
+                    </li>
+                </uL>
+            </li>
+        </ul>
         <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
             <ul>
                 <li v-for="(item, index) in shortcutList" :key="index" :data-index="index" class="item"
@@ -68,9 +66,6 @@ export default {
       return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
-  mounted () {
-    this._initTouch()
-  },
   created () {
     this.probeType = 3
     this.listenScroll = true
@@ -85,24 +80,6 @@ export default {
     }
   },
   methods: {
-    _initTouch () {
-      var router = this.$router
-      this.$refs.singersTouch.addEventListener('touchstart', (e) => {
-        this.startX = e.touches[0].pageX
-      })
-      this.$refs.singersTouch.addEventListener('touchmove', (e) => {
-        var moveEndX = e.changedTouches[0].pageX
-        this.X = moveEndX - this.startX
-      })
-      this.$refs.singersTouch.addEventListener('touchend', (e) => {
-        if (this.X < -100) {
-          router.push('/rank')
-        }
-        if (this.X > 100) {
-          router.push('/recommend')
-        }
-      })
-    },
     selectItem (item) {
       this.$emit('select', item)
     },

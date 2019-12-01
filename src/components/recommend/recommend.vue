@@ -1,6 +1,7 @@
 <template>
     <!--推荐页面模块-->
     <div class="recommend" ref="recommend">
+
         <scroll ref="scroll" class="recommend-content" :data="discList">
             <div>
                 <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
@@ -12,21 +13,23 @@
                         </div>
                     </sliber>
                 </div>
-                <div class="recommend-list" ref="recommend_list">
-                    <h1 class="list-title">热门歌单推荐</h1>
-                    <ul>
-                        <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
-                            class="item">
-                            <div class="icon">
-                                <img width="60" height="60" v-lazy="item.imgUrl"/>
-                            </div>
-                            <div class="text">
-                                <h2 class="name" v-html="item.name"></h2>
-                                <p class="desc" v-html="item.dissName"></p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                <v-touch v-on:swipeleft="swiperleft" class="wrapper">
+                    <div class="recommend-list" ref="recommend_list">
+                        <h1 class="list-title">热门歌单推荐</h1>
+                        <ul>
+                            <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
+                                class="item">
+                                <div class="icon">
+                                    <img width="60" height="60" v-lazy="item.imgUrl"/>
+                                </div>
+                                <div class="text">
+                                    <h2 class="name" v-html="item.name"></h2>
+                                    <p class="desc" v-html="item.dissName"></p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </v-touch>
             </div>
             <div class="loading-container" v-show="!discList.length">
                 <loading/>
@@ -59,29 +62,11 @@ export default {
     Scroll,
     Loading
   },
-  mounted () {
-    this._initTouch()
-  },
   created () {
     this._getRecommend()
     this._getDiscList()
   },
   methods: {
-    _initTouch () {
-      var router = this.$router
-      this.$refs.recommend_list.addEventListener('touchstart', (e) => {
-        this.startX = e.touches[0].pageX
-      })
-      this.$refs.recommend_list.addEventListener('touchmove', (e) => {
-        var moveEndX = e.changedTouches[0].pageX
-        this.X = moveEndX - this.startX
-      })
-      this.$refs.recommend_list.addEventListener('touchend', (e) => {
-        if (this.X < -100) {
-          router.push('/singer')
-        }
-      })
-    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
@@ -112,6 +97,9 @@ export default {
         path: `/recommend/${item.dissId}`
       })
       this.setDisc(item)
+    },
+    swiperleft: function () {
+      this.$router.push({ 'path': '/singer' })
     },
     ...mapMutations({
       setDisc: 'SET_DISC'

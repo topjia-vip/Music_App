@@ -4,12 +4,10 @@
         <tab/>
 
         <transition
-                mode="out-in"
-                :enter-active-class="isRight?'animated fadeInRight':'animated fadeInLeft'"
-                :leave-active-class="isRight?'animated fadeOutLeft':'animated fadeOutRight'"
+                name="fade"
         >
             <keep-alive>
-                <router-view style="animation-duration: 0.4s"></router-view>
+                <router-view style="animation-duration: 0.8s"></router-view>
             </keep-alive>
         </transition>
         <player/>

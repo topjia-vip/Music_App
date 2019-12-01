@@ -1,7 +1,9 @@
 <template>
     <!--歌手页面模块-->
     <div class="singer" ref="singers">
-        <list-view @select="selectSinger" :data="singers" ref="list"/>
+        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="singer">
+            <list-view @select="selectSinger" :data="singers" ref="list"/>
+        </v-touch>
         <router-view/>
     </div>
 </template>
@@ -91,6 +93,12 @@ export default {
       const bottom = playlist.length > 0 ? '60px' : ''
       this.$refs.singers.style.bottom = bottom
       this.$refs.list.refresh()
+    },
+    swiperleft: function () {
+      this.$router.push({ 'path': '/rank' })
+    },
+    swiperright: function () {
+      this.$router.push({ 'path': '/recommend' })
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'
