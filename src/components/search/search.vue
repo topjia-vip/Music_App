@@ -3,7 +3,7 @@
         <div class="search-box-wrapper">
             <search-box ref="searchBox" @query="onQueryChange"></search-box>
         </div>
-        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="wrapper">
+        <v-touch v-on:swiperight="swiperright" class="wrapper">
             <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
                 <scroll :refresh-delay="refreshDelay" ref="shortcut" class="shortcut" :data="shortcut">
                     <div>

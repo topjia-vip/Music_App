@@ -1,6 +1,6 @@
 <template>
     <div class="rank" ref="rank">
-        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="rank">
+        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="rank" ref="wapper">
             <scroll class="toplist" ref="toplist" :data="topList">
                 <ul>
                     <li class="item" v-for="(item,index) in topList" :key="index" @click="selectItem(item)">
@@ -53,7 +53,7 @@ export default {
     },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
-      this.$refs.rank.style.bottom = bottom
+      this.$refs.wapper.$el.style.bottom = bottom
       this.$refs.toplist.refresh()
     },
     selectItem (item) {

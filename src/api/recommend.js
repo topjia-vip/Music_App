@@ -1,4 +1,4 @@
-import { commonParams, BASE_URL } from './config'
+import { BASE_URL } from './config'
 import axios from 'axios'
 import Qs from 'qs'
 
@@ -9,9 +9,12 @@ export function getRecommend () {
   })
 }
 
-export function getDiscList () {
+export function getDiscList (sortId) {
   const url = `${BASE_URL}/getDiscList`
-  return axios.post(url).then((res) => {
+  const data = {
+    sortId
+  }
+  return axios.post(url, Qs.stringify(data)).then((res) => {
     return Promise.resolve(res.data)
   })
 }
@@ -19,9 +22,9 @@ export function getDiscList () {
 export function getSongList (disstid) {
   const url = `${BASE_URL}/getCDInfo`
 
-  const data = Object.assign({}, commonParams, {
+  const data = {
     disstid
-  })
+  }
 
   return axios.post(url, Qs.stringify(data)).then((res) => {
     return Promise.resolve(res.data)

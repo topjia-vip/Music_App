@@ -1,7 +1,7 @@
 <template>
     <!--歌手页面模块-->
     <div class="singer" ref="singers">
-        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="singer">
+        <v-touch v-on:swipeleft="swiperleft" v-on:swiperight="swiperright" class="singer" ref="wapper">
             <list-view @select="selectSinger" :data="singers" ref="list"/>
         </v-touch>
         <router-view/>
@@ -91,7 +91,7 @@ export default {
     },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
-      this.$refs.singers.style.bottom = bottom
+      this.$refs.wapper.$el.style.bottom = bottom
       this.$refs.list.refresh()
     },
     swiperleft: function () {

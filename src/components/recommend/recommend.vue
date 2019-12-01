@@ -1,22 +1,26 @@
 <template>
     <!--推荐页面模块-->
     <div class="recommend" ref="recommend">
-
-        <scroll ref="scroll" class="recommend-content" :data="discList">
-            <div>
-                <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
-                    <sliber>
-                        <div v-for="(item,index) in recommends" :key="index">
-                            <a :href="item.jumpInfo">
-                                <img @load="loadImage" class="needsclick" :src="item.picInfo">
-                            </a>
-                        </div>
-                    </sliber>
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
+            <sliber>
+                <div v-for="(item,index) in recommends" :key="index">
+                    <a :href="item.jumpInfo">
+                        <img @load="loadImage" class="needsclick" :src="item.picInfo">
+                    </a>
                 </div>
-                <v-touch v-on:swipeleft="swiperleft" class="wrapper">
-                    <div class="recommend-list" ref="recommend_list">
-                        <h1 class="list-title">热门歌单推荐</h1>
-                        <ul>
+            </sliber>
+        </div>
+        <h1 style="height: 65px" class="list-title" @click="changeSongList" ref="lsit">
+            {{this.isHotSongList?'热门':'最新'}}歌单推荐</h1>
+        <scroll ref="scroll" class="recommend-content" style="height: 100%" :data="discList">
+            <v-touch v-on:swipeleft="swiperleft">
+                <div class="recommend-list" ref="recommend_list">
+                    <transition
+                            name="fade"
+                            enter-active-class="fadeInRight"
+                            leave-active-class="fadeOutLeft"
+                    >
+                        <ul v-show="isShow">
                             <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
                                 class="item">
                                 <div class="icon">
@@ -28,9 +32,9 @@
                                 </div>
                             </li>
                         </ul>
-                    </div>
-                </v-touch>
-            </div>
+                    </transition>
+                </div>
+            </v-touch>
             <div class="loading-container" v-show="!discList.length">
                 <loading/>
             </div>
@@ -54,8 +58,14 @@ export default {
   data () {
     return {
       recommends: [],
-      discList: []
+      discList: [],
+      isHotSongList: true,
+      isShow: true
     }
+  },
+  mounted () {
+    let topInfoheight = this.$refs.lsit.style.height
+    console.log(topInfoheight)
   },
   components: {
     Sliber,
@@ -64,9 +74,20 @@ export default {
   },
   created () {
     this._getRecommend()
-    this._getDiscList()
+    this._getDiscList(5)
   },
   methods: {
+    changeSongList () {
+      this.isShow = false
+      this.isHotSongList = !this.isHotSongList
+      const sortId = this.isHotSongList ? 5 : 2
+      setTimeout(() => {
+        this._getDiscList(sortId)
+      }, 500)
+      setTimeout(() => {
+        this.isShow = true
+      }, 1000)
+    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
@@ -74,8 +95,8 @@ export default {
         }
       })
     },
-    _getDiscList () {
-      getDiscList().then((res) => {
+    _getDiscList (sortId) {
+      getDiscList(sortId).then((res) => {
         if (res.code === ERR_OK) {
           this.discList = res.list
         }
@@ -117,54 +138,54 @@ export default {
         top: 88px
         bottom: 0
 
-        .recommend-content
-            height: 100%
+        .slider-wrapper
+            position: relative
+            width: 100%
             overflow: hidden
 
-            .slider-wrapper
-                position: relative
-                width: 100%
-                overflow: hidden
+        .list-title
+            height 65px
+            line-height: 65px
+            text-align: center
+            font-size: $font-size-medium
+            color: $color-theme
+
+        .recommend-content
+            height 100%
+            overflow: hidden
 
             .recommend-list
-                .list-title
-                    height: 65px
-                    line-height: 65px
-                    text-align: center
-                    font-size: $font-size-medium
-                    color: $color-theme
-
                 .item
                     display: flex
                     box-sizing: border-box
                     align-items: center
                     padding: 0 20px 20px 20px
 
-                    .icon
-                        flex: 0 0 60px
-                        width: 60px
-                        height: 60px
-                        padding-right: 20px
+                .icon
+                    flex: 0 0 60px
+                    width: 60px
+                    height: 60px
+                    padding-right: 20px
 
-                    .text
-                        display: flex
-                        flex-direction: column
-                        justify-content: center
-                        flex: 1
-                        line-height: 20px
-                        overflow: hidden
-                        font-size: $font-size-medium
+                .text
+                    display: flex
+                    flex-direction: column
+                    justify-content: center
+                    flex: 1
+                    line-height: 20px
+                    overflow: hidden
+                    font-size: $font-size-medium
 
-                        .name
-                            margin-bottom: 10px
-                            color: $color-text
+                .name
+                    margin-bottom: 10px
+                    color: $color-text
 
-                        .desc
-                            color: $color-text-d
+                .desc
+                    color: $color-text-d
 
-            .loading-container
-                position: absolute
-                width: 100%
-                top: 50%
-                transform: translateY(-50%)
+        .loading-container
+            position: absolute
+            width: 100%
+            top: 50%
+            transform: translateY(-50%)
 </style>
