@@ -333,10 +333,6 @@ export default {
       }
       const touch = e.touches[0]
       const deltaX = touch.pageX - this.touch.startX
-      const deltaY = touch.pageY - this.touch.startY
-      if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        return
-      }
       const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
       const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
       this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
@@ -423,8 +419,8 @@ export default {
       }
       clearTimeout(this.timer)
       this.timer = setTimeout(() => {
-        this.$refs.audio.play()
         this.getLyric()
+        this.$refs.audio.play()
       }, 1000)
     },
     playing (newPlaying) {

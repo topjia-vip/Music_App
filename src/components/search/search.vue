@@ -9,7 +9,8 @@
                     <div class="hot-key">
                         <h1 class="title">热门搜索</h1>
                         <ul>
-                            <li @click="addQuery(item.hotKey)" class="item" v-for="(item,index) in hotKey" :key="index">
+                            <li @click="addQuery(item.hotKey)" class="item" v-for="(item,index) in hotKey"
+                                :key="index">
                                 {{item.hotKey}}
                             </li>
                         </ul>
@@ -53,6 +54,9 @@ export default {
       hotKey: []
     }
   },
+  mounted () {
+    this._initTouch()
+  },
   computed: {
     shortcut () {
       return this.hotKey.concat(this.searchHistory)
@@ -69,6 +73,21 @@ export default {
     this._getHotKey()
   },
   methods: {
+    _initTouch () {
+      var router = this.$router
+      this.$refs.shortcutWrapper.addEventListener('touchstart', (e) => {
+        this.startX = e.touches[0].pageX
+      })
+      this.$refs.shortcutWrapper.addEventListener('touchmove', (e) => {
+        var moveEndX = e.changedTouches[0].pageX
+        this.X = moveEndX - this.startX
+      })
+      this.$refs.shortcutWrapper.addEventListener('touchend', (e) => {
+        if (this.X > 100) {
+          router.push('/rank')
+        }
+      })
+    },
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
 

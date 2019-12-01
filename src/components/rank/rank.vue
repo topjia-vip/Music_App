@@ -38,10 +38,31 @@ export default {
       topList: []
     }
   },
+  mounted () {
+    this._initTouch()
+  },
   created () {
     this._getTopList()
   },
   methods: {
+    _initTouch () {
+      var router = this.$router
+      this.$refs.rank.addEventListener('touchstart', (e) => {
+        this.startX = e.touches[0].pageX
+      })
+      this.$refs.rank.addEventListener('touchmove', (e) => {
+        var moveEndX = e.changedTouches[0].pageX
+        this.X = moveEndX - this.startX
+      })
+      this.$refs.rank.addEventListener('touchend', (e) => {
+        if (this.X < -100) {
+          router.push('/search')
+        }
+        if (this.X > 100) {
+          router.push('/singer')
+        }
+      })
+    },
     _getTopList () {
       getTopList().then(res => {
         if (res.code === ERR_OK) {

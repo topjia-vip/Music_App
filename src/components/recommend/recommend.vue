@@ -12,10 +12,11 @@
                         </div>
                     </sliber>
                 </div>
-                <div class="recommend-list">
+                <div class="recommend-list" ref="recommend_list">
                     <h1 class="list-title">热门歌单推荐</h1>
                     <ul>
-                        <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index" class="item">
+                        <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
+                            class="item">
                             <div class="icon">
                                 <img width="60" height="60" v-lazy="item.imgUrl"/>
                             </div>
@@ -58,11 +59,29 @@ export default {
     Scroll,
     Loading
   },
+  mounted () {
+    this._initTouch()
+  },
   created () {
     this._getRecommend()
     this._getDiscList()
   },
   methods: {
+    _initTouch () {
+      var router = this.$router
+      this.$refs.recommend_list.addEventListener('touchstart', (e) => {
+        this.startX = e.touches[0].pageX
+      })
+      this.$refs.recommend_list.addEventListener('touchmove', (e) => {
+        var moveEndX = e.changedTouches[0].pageX
+        this.X = moveEndX - this.startX
+      })
+      this.$refs.recommend_list.addEventListener('touchend', (e) => {
+        if (this.X < -100) {
+          router.push('/singer')
+        }
+      })
+    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {

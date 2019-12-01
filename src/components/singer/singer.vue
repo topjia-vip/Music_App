@@ -28,10 +28,43 @@ export default {
   components: {
     ListView
   },
+  mounted () {
+    this._initTouch()
+  },
   created () {
     this._getSingerList()
   },
   methods: {
+    _initTouch () {
+      var router = this.$router
+      this.$refs.singers.addEventListener('touchstart', (e) => {
+        this.startX = e.touches[0].pageX
+      })
+      this.$refs.singers.addEventListener('touchmove', (e) => {
+        var moveEndX = e.changedTouches[0].pageX
+        this.X = moveEndX - this.startX
+        // var X = moveEndX - this.startX
+        // if (X < -50 || X > 50) {
+        //   this.$refs.singers.style.left = X + 'px'
+        // } else {
+        //   this.$refs.singers.style.left = 0 + 'px'
+        // }
+      })
+      this.$refs.singers.addEventListener('touchend', (e) => {
+        // if (this.$refs.singers.offsetLeft < -100) {
+        //   router.push('/rank')
+        // }
+        // if (this.$refs.singers.offsetLeft > 100) {
+        //   router.push('/recommend')
+        // }
+        if (this.X < -100) {
+          router.push('/rank')
+        }
+        if (this.X > 100) {
+          router.push('/recommend')
+        }
+      })
+    },
     _getSingerList () {
       getSingerList().then((res) => {
         if (res.code === ERR_OK) {
