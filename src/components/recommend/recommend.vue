@@ -5,36 +5,39 @@
             <sliber>
                 <div v-for="(item,index) in recommends" :key="index">
                     <a :href="item.jumpInfo">
-                        <img @load="loadImage" class="needsclick" :src="item.picInfo">
+                        <img @load="loadImage" class="needsclick" :src="item.picInfo" style="height: 150px">
                     </a>
                 </div>
             </sliber>
         </div>
-        <h1 style="height: 65px" class="list-title" @click="changeSongList" ref="lsit">
+        <h1 style="height: 65px" class="list-title" @click="changeSongList" ref="list">
             {{this.isHotSongList?'热门':'最新'}}歌单推荐</h1>
         <scroll ref="scroll" class="recommend-content" style="height: 100%" :data="discList">
-            <v-touch v-on:swipeleft="swiperleft">
-                <div class="recommend-list" ref="recommend_list">
-                    <transition
-                            name="fade"
-                            enter-active-class="fadeInRight"
-                            leave-active-class="fadeOutLeft"
-                    >
-                        <ul v-show="isShow">
-                            <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
-                                class="item">
-                                <div class="icon">
-                                    <img width="60" height="60" v-lazy="item.imgUrl"/>
-                                </div>
-                                <div class="text">
-                                    <h2 class="name" v-html="item.name"></h2>
-                                    <p class="desc" v-html="item.dissName"></p>
-                                </div>
-                            </li>
-                        </ul>
-                    </transition>
-                </div>
-            </v-touch>
+            <div>
+                <v-touch v-on:swipeleft="swiperleft">
+                    <div class="recommend-list" ref="recommend_list">
+                        <transition
+                                name="fade"
+                                enter-active-class="fadeInRight"
+                                leave-active-class="fadeOutLeft"
+                        >
+                            <ul v-show="isShow">
+                                <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
+                                    class="item">
+                                    <div class="icon">
+                                        <img width="60" height="60" v-lazy="item.imgUrl"/>
+                                    </div>
+                                    <div class="text">
+                                        <h2 class="name" v-html="item.name"></h2>
+                                        <p class="desc" v-html="item.dissName"></p>
+                                    </div>
+                                </li>
+                                <p class="tip-title">😔已经到底了哦，没有更多歌单了</p>
+                            </ul>
+                        </transition>
+                    </div>
+                </v-touch>
+            </div>
             <div class="loading-container" v-show="!discList.length">
                 <loading/>
             </div>
@@ -60,12 +63,10 @@ export default {
       recommends: [],
       discList: [],
       isHotSongList: true,
-      isShow: true
+      isShow: true,
+      height: 0,
+      isHandleMini: false
     }
-  },
-  mounted () {
-    let topInfoheight = this.$refs.lsit.style.height
-    console.log(topInfoheight)
   },
   components: {
     Sliber,
@@ -76,12 +77,19 @@ export default {
     this._getRecommend()
     this._getDiscList(5)
   },
+  mounted () {
+    this.handleHeight()
+    window.addEventListener('resize', () => {
+      this.handleHeight()
+    })
+  },
   methods: {
     changeSongList () {
       this.isShow = false
       this.isHotSongList = !this.isHotSongList
       const sortId = this.isHotSongList ? 5 : 2
       setTimeout(() => {
+        this.$refs.scroll.scrollTo(0, 0, 0)
         this._getDiscList(sortId)
       }, 500)
       setTimeout(() => {
@@ -109,9 +117,31 @@ export default {
       }
     },
     handlePlaylist (playlist) {
-      const bottom = playlist.length > 0 ? '60px' : ''
-      this.$refs.recommend.style.bottom = bottom
-      this.$refs.scroll.refresh()
+      if (playlist.length > 0) {
+        const bottom = '60px'
+        this.$refs.recommend.style.bottom = bottom
+        if (!this.isHandleMini) {
+          this.isHandleMini = true
+          const old = parseInt(this.$refs.scroll.$el.style.height.split('p')[0])
+          this.$refs.scroll.$el.style.height = `${old - 60}px`
+        }
+        this.$refs.scroll.refresh()
+      } else {
+        this.$refs.recommend.style.bottom = ''
+        if (this.isHandleMini) {
+          this.isHandleMini = false
+          const old = parseInt(this.$refs.scroll.$el.style.height.split('p')[0])
+          this.$refs.scroll.$el.style.height = `${old + 60}px`
+        }
+        this.$refs.scroll.refresh()
+      }
+    },
+    handleHeight () {
+      const baseHeight = this.$refs.recommend.clientHeight
+      const listHeight = this.$refs.list.clientHeight
+      // this.$refs.sliderWrapper.height = Math.floor(baseHeight * 0.20718)
+      // const sliderWrapperHeight = this.$refs.sliderWrapper.height
+      this.$refs.scroll.$el.style.height = `${(baseHeight - listHeight - 162.8)}px`
     },
     selectItem (item) {
       this.$router.push({
@@ -139,11 +169,12 @@ export default {
         bottom: 0
 
         .slider-wrapper
-            position: relative
+            position relative
             width: 100%
             overflow: hidden
 
         .list-title
+            position relative
             height 65px
             line-height: 65px
             text-align: center
@@ -152,7 +183,7 @@ export default {
 
         .recommend-content
             height 100%
-            overflow: hidden
+            overflow hidden
 
             .recommend-list
                 .item
@@ -182,6 +213,11 @@ export default {
 
                 .desc
                     color: $color-text-d
+
+                .tip-title
+                    text-align: center;
+                    font-size: 13px;
+                    color: rgba(255, 255, 255, 0.5);
 
         .loading-container
             position: absolute

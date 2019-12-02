@@ -28,13 +28,14 @@ export default {
     },
     interval: {
       type: Number,
-      default: 4000
+      default: 3000
     }
   },
   data () {
     return {
       dots: [],
-      currentPageIndex: 0
+      currentPageIndex: 0,
+      height: 0
     }
   },
   mounted () {
@@ -42,12 +43,10 @@ export default {
       this._setSliderWidth()
       this._initDots()
       this._initSlider()
-
       if (this.autoPlay) {
         this._play()
       }
     }, 20)
-
     window.addEventListener('resize', () => {
       if (!this.slider) {
         return

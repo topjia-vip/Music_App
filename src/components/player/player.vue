@@ -1,5 +1,5 @@
 <template>
-    <div class="player" v-show="playlist.length>0">
+    <div class="player" v-show="playlist.length>0" ref="player">
         <transition name="normal"
                     @enter="enter"
                     @after-enter="afterEnter"
@@ -17,13 +17,10 @@
                     <h1 class="title" v-html="currentSong.name"></h1>
                     <h2 class="subtitle" v-html="currentSong.singer"></h2>
                 </div>
-                <div class="middle"
-                     @touchstart.prevent="middleTouchStart"
-                     @touchmove.prevent="middleTouchMove"
-                     @touchend="middleTouchEnd"
-                >
+                <div class="middle" @click.stop="showCdOrLyric('lyric')" ref="middle">
                     <div class="middle-l" ref="middleL">
-                        <div class="cd-wrapper" ref="cdWrapper">
+                        <div class="cd-wrapper" ref="cdWrapper"
+                        >
                             <div class="cd" :class="cdCls">
                                 <img class="image" :src="currentSong.image">
                             </div>
@@ -33,7 +30,7 @@
                         </div>
                     </div>
                     <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
-                        <div class="lyric-wrapper">
+                        <div @click.stop="showCdOrLyric('cd')" class="lyric-wrapper">
                             <div v-if="currentLyric">
                                 <p ref="lyricLine"
                                    class="text"
@@ -126,7 +123,9 @@ export default {
       currentLyric: null,
       currentLineNum: 0,
       currentShow: 'cd',
-      playingLyric: ''
+      playingLyric: '',
+      timeOutEvent: 0,
+      isShowPic: false
     }
   },
   computed: {
@@ -152,10 +151,29 @@ export default {
       'sequenceList'
     ])
   },
-  created () {
-    this.touch = {}
+  mounted () {
+    window.addEventListener('resize', () => {
+      this._initCdTop()
+    })
   },
   methods: {
+    showCdOrLyric (type) {
+      this.currentShow = type
+      let offWidth
+      let opacity
+      if (type === 'cd') {
+        offWidth = 0
+        opacity = 1
+      } else {
+        offWidth = -window.innerWidth
+        opacity = 0
+      }
+      const time = 300
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${offWidth}px,0,0)`
+      this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
+      this.$refs.middleL.style.opacity = opacity
+      this.$refs.middleL.style[transitionDuration] = `${time}ms`
+    },
     back () {
       this.setFullScreen(false)
     },
@@ -321,55 +339,6 @@ export default {
     showPlaylist () {
       this.$refs.playlist.show()
     },
-    middleTouchStart (e) {
-      this.touch.initiated = true
-      const touch = e.touches[0]
-      this.touch.startX = touch.pageX
-      this.touch.startY = touch.pageY
-    },
-    middleTouchMove (e) {
-      if (!this.touch.initiated) {
-        return
-      }
-      const touch = e.touches[0]
-      const deltaX = touch.pageX - this.touch.startX
-      const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
-      const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
-      this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
-      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
-      this.$refs.lyricList.$el.style[transitionDuration] = 0
-      this.$refs.middleL.style.opacity = 1 - this.touch.percent
-      this.$refs.middleL.style[transitionDuration] = 0
-    },
-    middleTouchEnd () {
-      let offsetWidth
-      let opacity
-      if (this.currentShow === 'cd') {
-        if (this.touch.percent > 0.3) {
-          offsetWidth = -window.innerWidth
-          opacity = 0
-          this.currentShow = 'lyric'
-        } else {
-          offsetWidth = 0
-          opacity = 1
-        }
-      } else {
-        if (this.touch.percent < 0.7) {
-          offsetWidth = 0
-          this.currentShow = 'cd'
-          opacity = 1
-        } else {
-          offsetWidth = -window.innerWidth
-          opacity = 0
-        }
-      }
-      const time = 300
-      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
-      this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
-      this.$refs.middleL.style.opacity = opacity
-      this.$refs.middleL.style[transitionDuration] = `${time}ms`
-      this.touch.initiated = false
-    },
     _pad (num, n = 2) {
       let len = num.toString().length
       while (len < n) {
@@ -391,6 +360,17 @@ export default {
         x,
         y,
         scale
+      }
+    },
+    _initCdTop () {
+      if (this.fullScreen) {
+        setTimeout(() => {
+          const middleHeight = this.$refs.middle.clientHeight
+          const cdHeight = this.$refs.middleL.children[0].clientHeight
+          const playingLyricHeight = this.$refs.middleL.children[1].clientHeight
+          const marginTop = (middleHeight - cdHeight - playingLyricHeight) / 2
+          this.$refs.middleL.style.marginTop = `${marginTop}px`
+        }, 20)
       }
     },
     ...mapMutations({
@@ -418,8 +398,8 @@ export default {
         this.currentLineNum = 0
       }
       clearTimeout(this.timer)
+      this.getLyric()
       this.timer = setTimeout(() => {
-        this.getLyric()
         this.$refs.audio.play()
       }, 1000)
     },
@@ -428,6 +408,10 @@ export default {
       this.$nextTick(() => {
         newPlaying ? audio.play() : audio.pause()
       })
+    },
+    fullScreen () {
+      // 居中cd
+      this._initCdTop()
     }
   },
   components: {

@@ -16,7 +16,11 @@
                     <p class="text" v-html="getDisplayName(item)"></p>
                 </div>
             </li>
-            <loading v-show="hasMore" title="加载中，请稍后"/>
+            <loading v-if="isShow && hasMore" title="加载中，请稍后"/>
+            <div v-else-if="!isShow && hasMore" class="more">
+                <p class="arrow">↑</p>
+                <p>上拉加载更多</p>
+            </div>
         </ul>
         <div class="no-result-wrapper">
             <no-result title="抱歉，暂无搜索结果" v-show="!hasMore && !result.length"/>
@@ -52,18 +56,22 @@ export default {
       beforeScroll: true,
       hasMore: true,
       result: [],
-      showSinger: true
+      showSinger: true,
+      isShow: false
     }
   },
   methods: {
     search () {
       if (!this.query) {
+        this.result = []
         return
       }
       this.page = 1
       this.hasMore = true
       this.$refs.suggest.scrollTo(0, 0)
+      this.isShow = true
       search(this.query, this.page, this.showSinger, perpage).then((res) => {
+        this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
             this.result = r
@@ -77,7 +85,9 @@ export default {
         return
       }
       this.page++
-      search(this.query, this.page, this.showSinger, perpage).then((res) => {
+      this.isShow = true
+      search(this.query, this.page, false, perpage).then((res) => {
+        this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
             this.result = this.result = this.result.concat(r)
@@ -168,6 +178,14 @@ export default {
                 display: flex
                 align-items: center
                 padding-bottom: 20px
+
+            .more
+                text-align: center;
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.5);
+
+                .arrow
+                    margin-bottom 5px
 
             .icon
                 flex: 0 0 30px
