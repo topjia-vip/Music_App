@@ -43,7 +43,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { playMode } from 'common/js/config'
 import Scroll from 'base/scroll/scroll'
 import Confirm from 'base/confirm/confirm'
@@ -68,7 +68,10 @@ export default {
   computed: {
     modeText () {
       return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
-    }
+    },
+    ...mapGetters([
+      'sequenceList'
+    ])
   },
   methods: {
     show () {

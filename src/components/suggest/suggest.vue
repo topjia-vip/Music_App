@@ -3,7 +3,7 @@
             ref="suggest"
             class="suggest"
             :data="result"
-            :pullDownRefresh="pullDownRefresh"
+            :pullDownRefresh="{threshold: 30}"
             :beforeScroll="beforeScroll"
             @pullingDown="searchMore"
             @beforeScroll="listScroll"
@@ -11,8 +11,6 @@
         <loading v-if="isShow && hasMore" title="加载中，请稍后"/>
         <transition
                 name="fade"
-                enter-active-class="fadeInRight"
-                leave-active-class="fadeOutLeft"
         >
             <ul class="suggest-list" v-show="showSuggest" :style="height">
                 <li @click="selectItem(item)" class="suggest-item" v-for="(item,index) in result" :key="index">
@@ -79,7 +77,6 @@ export default {
         this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
-            console.log(res)
             this.result = r
             this._checkMore(res.data)
           })
@@ -87,29 +84,25 @@ export default {
       })
     },
     searchMore () {
-      console.log()
       if (!this.hasMore) {
         return
       }
       this.page++
       this.isShow = true
+      this.showSuggest = false
       search(this.query, this.page, false, perpage).then((res) => {
         this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
-            console.log(res)
-            this.showSuggest = false
             this.result = r
             this._checkMore(res.data)
           })
         }
+        this.showSuggest = true
         setTimeout(() => {
-          this.showSuggest = true
-          setTimeout(() => {
-            this.$refs.suggest.refresh()
-            this.$refs.suggest.finishPullDown()
-          }, 20)
-        }, 400)
+          this.$refs.suggest.refresh()
+          this.$refs.suggest.finishPullDown()
+        }, 20)
       })
     },
     _checkMore (data) {

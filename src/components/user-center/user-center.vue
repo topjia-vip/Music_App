@@ -11,7 +11,7 @@
                 <i class="icon-play"></i>
                 <span class="text">随机播放全部</span>
             </div>
-            <div class="list-wrapper" ref="listWrapper">
+            <div v-show="!isShow" class="list-wrapper" ref="listWrapper">
                 <scroll ref="favoriteList" class="list-scroll" v-if="currentIndex===0" :data="favoriteList">
                     <div class="list-inner">
                         <song-list :songs="favoriteList" @select="selectSong"></song-list>
@@ -23,6 +23,7 @@
                     </div>
                 </scroll>
             </div>
+            <loading v-show="isShow" title="初始化歌曲请稍后"/>
             <div class="no-result-wrapper" v-show="noResult">
                 <no-result :title="noResultDesc"></no-result>
             </div>
@@ -36,8 +37,11 @@ import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import NoResult from 'base/no-result/no-result'
 import Song from 'common/js/song'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { playlistMixin } from 'common/js/mixin'
+import { getSongPlayVkey } from '../../api/song'
+import { ERR_OK } from '../../api/config'
+import Loading from '../../base/loading/loading'
 
 export default {
   mixins: [playlistMixin],
@@ -51,7 +55,8 @@ export default {
         {
           name: '最近听的'
         }
-      ]
+      ],
+      isShow: false
     }
   },
   computed: {
@@ -91,23 +96,56 @@ export default {
       this.$router.back()
     },
     random () {
-      let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
-      if (list.length === 0) {
-        return
+      this.isShow = true
+      let songMids
+      if (this.currentIndex === 0) {
+        songMids = this.getSongMids(this.favoriteList)
+      } else {
+        songMids = this.getSongMids(this.playHistory)
       }
-      list = list.map((song) => {
-        return new Song(song)
-      })
-      this.randomPlay({
-        list
+      getSongPlayVkey(songMids).then(res => {
+        if (res.code === ERR_OK) {
+          if (this.currentIndex === 0) {
+            this.setFavoriteList(res.data)
+          } else {
+            this.setPlayHistory(res.data)
+          }
+        }
+        this.isShow = false
+        let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
+        if (list.length === 0) {
+          return
+        }
+        list = list.map((song) => {
+          return new Song(song)
+        })
+        this.randomPlay({
+          list
+        })
       })
     },
+    getSongMids (songs) {
+      let songMids = '['
+      for (let i = 0; i < songs.length; i++) {
+        if (i !== songs.length - 1) {
+          songMids += '"' + songs[i].mid + '",'
+        } else {
+          songMids += '"' + songs[i].mid + '"]'
+        }
+      }
+      return songMids
+    },
+    ...mapMutations({
+      setFavoriteList: 'MODIFY_FAVORITE_LIST_SONG_PLAY_URL',
+      setPlayHistory: 'MODIFY_PLAY_HISTORY_SONG_PLAY_URL'
+    }),
     ...mapActions([
       'insertSong',
       'randomPlay'
     ])
   },
   components: {
+    Loading,
     Switches,
     Scroll,
     SongList,
@@ -178,6 +216,7 @@ export default {
 
             .list-scroll
                 height: 100%
+                margin-top: 10px
                 overflow: hidden
 
                 .list-inner

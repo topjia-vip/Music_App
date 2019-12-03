@@ -34,8 +34,8 @@ export default {
       default: 20
     },
     pullDownRefresh: {
-      type: Boolean,
-      default: false
+      type: Object,
+      default: null
     }
   },
   mounted () {

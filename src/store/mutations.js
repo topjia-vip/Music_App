@@ -34,8 +34,18 @@ const mutations = {
   [types.SET_PLAY_HISTORY] (state, playHistory) {
     state.playHistory = playHistory
   },
+  [types.MODIFY_PLAY_HISTORY_SONG_PLAY_URL] (state, playUrls) {
+    for (let i = 0; i < state.playHistory.length; i++) {
+      state.playHistory[i].url = playUrls[i]
+    }
+  },
   [types.SET_FAVORITE_LIST] (state, list) {
     state.favoriteList = list
+  },
+  [types.MODIFY_FAVORITE_LIST_SONG_PLAY_URL] (state, playUrls) {
+    for (let i = 0; i < state.favoriteList.length; i++) {
+      state.favoriteList[i].url = playUrls[i]
+    }
   }
 }
 export default mutations

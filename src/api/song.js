@@ -11,3 +11,13 @@ export function getLyric (mid) {
     return Promise.resolve(res.data)
   })
 }
+
+export function getSongPlayVkey (songmids) {
+  const url = `${BASE_URL}/getSongPlayVkey`
+  const data = {
+    songmids: songmids
+  }
+  return axios.post(url, Qs.stringify(data)).then(res => {
+    return Promise.resolve(res.data)
+  })
+}
