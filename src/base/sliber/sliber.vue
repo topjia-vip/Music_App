@@ -28,14 +28,13 @@ export default {
     },
     interval: {
       type: Number,
-      default: 3000
+      default: 4000
     }
   },
   data () {
     return {
       dots: [],
-      currentPageIndex: 0,
-      height: 0
+      currentPageIndex: 0
     }
   },
   mounted () {
@@ -81,17 +80,16 @@ export default {
         scrollX: true,
         scrollY: false,
         momentum: false,
-        snap: true,
-        snapLoop: this.loop,
-        snapThreshold: 0.3,
-        snapSpeed: 400
+        probeType: 2,
+        snap: {
+          loop: this.loop,
+          threshold: 0.1,
+          speed: 400
+        }
       })
 
       this.slider.on('scrollEnd', () => {
         let pageIndex = this.slider.getCurrentPage().pageX
-        if (this.loop) {
-          pageIndex -= 1
-        }
         this.currentPageIndex = pageIndex
 
         if (this.autoPlay) {
@@ -105,11 +103,12 @@ export default {
     },
     _play () {
       let pageIndex = this.currentPageIndex + 1
-      if (this.loop) {
-        pageIndex += 1
+      let childrenLength = this.dots.length
+      if (pageIndex >= childrenLength) {
+        pageIndex = 0
       }
       this.timer = setTimeout(() => {
-        this.slider.goToPage(pageIndex, 0, 400)
+        this.slider.next()
       }, this.interval)
     },
     destroyed () {

@@ -14,7 +14,6 @@ export function search (query, page, zhida, perpage) {
   const data = {
     w: query,
     p: page,
-    perpage,
     n: perpage,
     catZhida: zhida ? 1 : 0
   }

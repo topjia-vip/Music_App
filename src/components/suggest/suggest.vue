@@ -1,27 +1,30 @@
 <template>
-    <scroll ref="suggest"
+    <scroll
+            ref="suggest"
             class="suggest"
             :data="result"
-            :pullup="pullup"
+            :pullDownRefresh="pullDownRefresh"
             :beforeScroll="beforeScroll"
-            @scrollToEnd="searchMore"
+            @pullingDown="searchMore"
             @beforeScroll="listScroll"
     >
-        <ul class="suggest-list">
-            <li @click="selectItem(item)" class="suggest-item" v-for="(item,index) in result" :key="index">
-                <div class="icon">
-                    <i :class="getIconCls(item)"></i>
-                </div>
-                <div class="name">
-                    <p class="text" v-html="getDisplayName(item)"></p>
-                </div>
-            </li>
-            <loading v-if="isShow && hasMore" title="加载中，请稍后"/>
-            <div v-else-if="!isShow && hasMore" class="more">
-                <p class="arrow">↑</p>
-                <p>上拉加载更多</p>
-            </div>
-        </ul>
+        <loading v-if="isShow && hasMore" title="加载中，请稍后"/>
+        <transition
+                name="fade"
+                enter-active-class="fadeInRight"
+                leave-active-class="fadeOutLeft"
+        >
+            <ul class="suggest-list" v-show="showSuggest" :style="height">
+                <li @click="selectItem(item)" class="suggest-item" v-for="(item,index) in result" :key="index">
+                    <div class="icon">
+                        <i :class="getIconCls(item)"></i>
+                    </div>
+                    <div class="name">
+                        <p class="text" v-html="getDisplayName(item)"></p>
+                    </div>
+                </li>
+            </ul>
+        </transition>
         <div class="no-result-wrapper">
             <no-result title="抱歉，暂无搜索结果" v-show="!hasMore && !result.length"/>
         </div>
@@ -39,7 +42,7 @@ import { mapMutations, mapActions } from 'vuex'
 import NoResult from '../../base/no-result/no-result'
 
 const TYPE_SINGER = 'singer'
-const perpage = 20
+const perpage = 40
 
 export default {
   components: { NoResult, Loading, Scroll },
@@ -52,12 +55,14 @@ export default {
   data () {
     return {
       page: 1,
-      pullup: true,
+      pullDownRefresh: true,
       beforeScroll: true,
       hasMore: true,
       result: [],
       showSinger: true,
-      isShow: false
+      isShow: false,
+      showSuggest: true,
+      height: 0
     }
   },
   methods: {
@@ -74,6 +79,7 @@ export default {
         this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
+            console.log(res)
             this.result = r
             this._checkMore(res.data)
           })
@@ -81,6 +87,7 @@ export default {
       })
     },
     searchMore () {
+      console.log()
       if (!this.hasMore) {
         return
       }
@@ -90,10 +97,19 @@ export default {
         this.isShow = false
         if (res.code === ERR_OK) {
           this._genResult(res.data).then(r => {
-            this.result = this.result = this.result.concat(r)
+            console.log(res)
+            this.showSuggest = false
+            this.result = r
             this._checkMore(res.data)
           })
         }
+        setTimeout(() => {
+          this.showSuggest = true
+          setTimeout(() => {
+            this.$refs.suggest.refresh()
+            this.$refs.suggest.finishPullDown()
+          }, 20)
+        }, 400)
       })
     },
     _checkMore (data) {
@@ -169,7 +185,7 @@ export default {
 
     .suggest
         height: 100%
-        margin-top 20px
+        margin-top 10px
         overflow: hidden
 
         .suggest-list

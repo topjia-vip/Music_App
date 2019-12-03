@@ -25,10 +25,6 @@ export default {
       type: Array,
       default: null
     },
-    pullup: {
-      type: Boolean,
-      default: false
-    },
     beforeScroll: {
       type: Boolean,
       default: false
@@ -36,6 +32,10 @@ export default {
     refreshDelay: {
       type: Number,
       default: 20
+    },
+    pullDownRefresh: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -50,7 +50,8 @@ export default {
       }
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
-        click: this.click
+        click: this.click,
+        pullDownRefresh: this.pullDownRefresh
       })
 
       if (this.listenScroll) {
@@ -60,11 +61,9 @@ export default {
         })
       }
 
-      if (this.pullup) {
-        this.scroll.on('scrollEnd', () => {
-          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
-            this.$emit('scrollToEnd')
-          }
+      if (this.pullDownRefresh) {
+        this.scroll.on('pullingDown', () => {
+          this.$emit('pullingDown')
         })
       }
 
@@ -88,6 +87,9 @@ export default {
     },
     scrollToElement () {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
+    },
+    finishPullDown () {
+      this.scroll && this.scroll.finishPullDown.apply(this.scroll, arguments)
     }
   },
   watch: {

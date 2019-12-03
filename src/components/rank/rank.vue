@@ -5,11 +5,11 @@
                 <ul>
                     <li class="item" v-for="(item,index) in topList" :key="index" @click="selectItem(item)">
                         <div class="icon">
-                            <img width="100" height="100" v-lazy="item.picUrl"/>
+                            <img width="100" height="100" v-lazy="item.picUrl" style="border-radius: 5px"/>
                         </div>
                         <ul class="songlist">
                             <li class="song" v-for="(song,index) in item.songList" :key="index">
-                                <span>{{index + 1}}</span>
+                                <span>{{index + 1}} 、</span>
                                 <span>{{song.songname}}-{{song.singername}}</span>
                             </li>
                         </ul>
@@ -112,7 +112,6 @@ export default {
                     padding: 0 20px
                     height: 100px
                     overflow: hidden
-                    background: $color-highlight-background
                     color: $color-text-d
                     font-size: $font-size-small
 

@@ -25,14 +25,14 @@
                                 <li @click="selectItem(item)" v-for="(item,index) in discList" :key="index"
                                     class="item">
                                     <div class="icon">
-                                        <img width="60" height="60" v-lazy="item.imgUrl"/>
+                                        <img width="60" height="60" v-lazy="item.imgUrl" style="border-radius: 5px"/>
                                     </div>
                                     <div class="text">
                                         <h2 class="name" v-html="item.name"></h2>
                                         <p class="desc" v-html="item.dissName"></p>
                                     </div>
                                 </li>
-                                <p class="tip-title">😔已经到底了哦，没有更多歌单了</p>
+                                <p v-show="discList.length" class="tip-title">😔已经到底了哦，没有更多歌单了</p>
                             </ul>
                         </transition>
                     </div>
