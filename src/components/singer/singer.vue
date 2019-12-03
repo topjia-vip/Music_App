@@ -110,7 +110,7 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
     .singer
         position: fixed
-        top: 88px
+        top: 118px
         bottom: 0
         width: 100%
 </style>

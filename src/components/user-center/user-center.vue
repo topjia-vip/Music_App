@@ -121,7 +121,7 @@ export default {
 
     .user-center
         position: fixed
-        top: 0
+        top: 30px
         bottom: 0
         z-index: 100
         width: 100%

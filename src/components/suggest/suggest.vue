@@ -169,6 +169,7 @@ export default {
 
     .suggest
         height: 100%
+        margin-top 20px
         overflow: hidden
 
         .suggest-list

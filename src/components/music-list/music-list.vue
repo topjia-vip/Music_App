@@ -34,7 +34,7 @@ import Loading from '../../base/loading/loading'
 import { mapActions } from 'vuex'
 import { playlistMixin } from '../../common/js/mixin'
 
-const RESERVED_HEIGHT = 40
+const RESERVED_HEIGHT = 70
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 export default {
@@ -156,7 +156,7 @@ export default {
 
         .back
             position absolute
-            top: 0
+            top: 30px
             left: 6px
             z-index: 50
 
@@ -168,7 +168,7 @@ export default {
 
         .title
             position: absolute
-            top: 0
+            top: 30px
             left: 10%
             z-index: 40
             width: 80%
@@ -235,6 +235,7 @@ export default {
             background: $color-background
 
             .song-list-wrapper
+                border-radius 20px
                 padding: 20px 30px
 
             .loading-container

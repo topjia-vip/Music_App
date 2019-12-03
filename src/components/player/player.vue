@@ -449,7 +449,7 @@ export default {
 
             .top
                 position: relative
-                margin-bottom: 25px
+                margin-top 25px
 
                 .back
                     position absolute
@@ -536,6 +536,7 @@ export default {
                             color: $color-text-l
 
                 .middle-r
+                    margin-top: 10px
                     display: inline-block
                     vertical-align: top
                     width: 100%

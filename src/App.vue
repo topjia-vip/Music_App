@@ -55,5 +55,6 @@ export default {
 <style scoped lang="stylus" rel="stylesheet/stylus">
     @import "~common/stylus/variable"
     #app
+        margin-top 30px
         color: $color-theme
 </style>

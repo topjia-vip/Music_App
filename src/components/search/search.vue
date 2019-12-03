@@ -129,7 +129,7 @@ export default {
                 overflow: hidden
 
                 .hot-key
-                    margin: 0 20px 20px 20px
+                    margin: 20px 20px 20px 20px
 
                     .title
                         margin-bottom: 20px

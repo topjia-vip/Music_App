@@ -13,8 +13,10 @@
                     <transition-group name="list" tag="ul">
                         <li :key="item.id" ref="listItem" class="item" v-for="(item,index) in sequenceList"
                             @click="selectItem(item,index)">
-                            <i class="current" :class="getCurrentIcon(item)"></i>
-                            <span class="text">{{item.name}}</span>
+                            <i class="current">
+                                <img :src="getCurrentIcon (item)">
+                            </i>
+                            <span class="text" :style="getCurrentText(item)">{{item.name}}</span>
                             <span @click.stop="toggleFavorite(item)" class="like">
                 <i :class="getFavoriteIcon(item)"></i>
               </span>
@@ -47,6 +49,8 @@ import Scroll from 'base/scroll/scroll'
 import Confirm from 'base/confirm/confirm'
 import AddSong from 'components/add-song/add-song'
 import { playerMixin } from 'common/js/mixin'
+
+import wave from './wave.gif'
 
 export default {
   mixins: [playerMixin],
@@ -86,7 +90,13 @@ export default {
     },
     getCurrentIcon (item) {
       if (this.currentSong.id === item.id) {
-        return 'icon-play'
+        return wave
+      }
+      return ''
+    },
+    getCurrentText (item) {
+      if (this.currentSong.id === item.id) {
+        return 'color : #ffcd32'
       }
       return ''
     },

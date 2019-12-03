@@ -2,8 +2,11 @@
     <div class="song-list">
         <ul>
             <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs" :key="index">
-                <div class="rank" v-show="rank">
+                <div class="rank" v-if="rank">
                     <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
+                </div>
+                <div class="rank" v-else>
+                    <span v-text="getIndex(index)" style="color: #a6a6a6"></span>
                 </div>
                 <div class="content">
                     <h2 class="name">{{song.name}}</h2>
@@ -43,6 +46,9 @@ export default {
       if (index > 2) {
         return index + 1
       }
+    },
+    getIndex (index) {
+      return index + 1
     }
   }
 }
