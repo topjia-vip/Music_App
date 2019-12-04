@@ -30,7 +30,7 @@ import { ERR_OK } from '../../api/config'
 import Loading from '../../base/loading/loading'
 import Scroll from '../../base/scroll/scroll'
 import { playlistMixin } from '../../common/js/mixin'
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   mixins: [playlistMixin],
@@ -42,6 +42,18 @@ export default {
   },
   created () {
     this._getTopList()
+  },
+  computed: {
+    ...mapGetters([
+      'fullScreen'
+    ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     _getTopList () {

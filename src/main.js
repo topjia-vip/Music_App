@@ -19,6 +19,7 @@ VueTouch.config.swipe = {
   // 设置左右滑动的距离
   threshold: 50
 }
+
 // 快速点击（移动端没有300ms的延迟）
 fastclick.attach(document.body)
 

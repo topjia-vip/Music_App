@@ -53,7 +53,7 @@ import Sliber from '../../base/sliber/sliber'
 import Scroll from '../../base/scroll/scroll'
 import Loading from '../../base/loading/loading'
 import { playlistMixin } from '../../common/js/mixin'
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'recommend',
@@ -82,6 +82,18 @@ export default {
     window.addEventListener('resize', () => {
       this.handleHeight()
     })
+  },
+  computed: {
+    ...mapGetters([
+      'fullScreen'
+    ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     changeSongList () {

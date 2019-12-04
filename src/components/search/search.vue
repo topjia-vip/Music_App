@@ -43,7 +43,7 @@ import SearchBox from '../../base/search-box/search-box'
 import { getHotKey } from '../../api/search'
 import { ERR_OK } from '../../api/config'
 import Suggest from '../suggest/suggest'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import SearchList from '../../base/search-list/search-list'
 import Confirm from '../../base/confirm/confirm'
 import Scroll from '../../base/scroll/scroll'
@@ -59,7 +59,10 @@ export default {
   computed: {
     shortcut () {
       return this.hotKey.concat(this.searchHistory)
-    }
+    },
+    ...mapGetters([
+      'fullScreen'
+    ])
   },
   components: {
     Scroll,
@@ -70,6 +73,13 @@ export default {
   },
   created () {
     this._getHotKey()
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     handlePlaylist (playlist) {

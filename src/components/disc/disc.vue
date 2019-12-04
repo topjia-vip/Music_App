@@ -20,12 +20,20 @@ export default {
       return this.disc.imgUrl
     },
     ...mapGetters([
-      'disc'
+      'disc',
+      'fullScreen'
     ])
   },
   data () {
     return {
       songs: []
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
     }
   },
   created () {

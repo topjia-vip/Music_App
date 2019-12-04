@@ -25,8 +25,16 @@ export default {
       return ''
     },
     ...mapGetters([
-      'topList'
+      'topList',
+      'fullScreen'
     ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   data () {
     return {

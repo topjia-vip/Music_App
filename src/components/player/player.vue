@@ -152,11 +152,21 @@ export default {
     ])
   },
   mounted () {
+    if (window.history && window.history.pushState) {
+      history.pushState(null, null, null)
+      window.addEventListener('popstate', this.routerBack, false)
+    }
+    this.setPlayingState(false)
     window.addEventListener('resize', () => {
       this._initCdTop()
     })
   },
   methods: {
+    routerBack () {
+      if (this.fullScreen) {
+        this.back()
+      }
+    },
     showCdOrLyric (type) {
       this.currentShow = type
       let offWidth
@@ -178,6 +188,8 @@ export default {
       this.setFullScreen(false)
     },
     open () {
+      this.currentShow = 'cd'
+      this.showCdOrLyric('cd')
       this.setFullScreen(true)
     },
     enter (el, done) {

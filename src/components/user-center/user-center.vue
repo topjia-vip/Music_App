@@ -76,8 +76,16 @@ export default {
     },
     ...mapGetters([
       'favoriteList',
-      'playHistory'
+      'playHistory',
+      'fullScreen'
     ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     handlePlaylist (playlist) {

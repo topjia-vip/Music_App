@@ -27,8 +27,16 @@ export default {
       return this.singer.avatar
     },
     ...mapGetters([
-      'singer'
+      'singer',
+      'fullScreen'
     ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   created () {
     this._getSingerDetail()

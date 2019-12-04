@@ -22,32 +22,10 @@ import Player from './components/player/player'
 import 'vue2-animate/dist/vue2-animate.min.css'
 
 export default {
-  data () {
-    return {
-      // 路由顺序，用与控制改变动画效果
-      routerArr: ['/recommend', '/singer', '/rank', '/search'],
-      isRight: false
-    }
-  },
   components: {
     Tab,
     MHeader,
     Player
-  },
-  // 监听,当路由发生变化的时候执行
-  watch: {
-    '$route': 'getPath'
-  },
-  methods: {
-    getPath (to, from) {
-      const toIndex = this.routerArr.indexOf(to.path)
-      const fromIndex = this.routerArr.indexOf(from.path)
-      if (toIndex > fromIndex) {
-        this.isRight = true
-      } else {
-        this.isRight = false
-      }
-    }
   }
 }
 </script>

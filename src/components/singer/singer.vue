@@ -13,7 +13,7 @@ import { getSingerList } from '../../api/singer'
 import { ERR_OK } from '../../api/config'
 import Singer from '../../common/js/singer'
 import ListView from '../../base/listview/listview'
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { playlistMixin } from '../../common/js/mixin'
 
 const HOT_NAME = '热门'
@@ -32,6 +32,18 @@ export default {
   },
   created () {
     this._getSingerList()
+  },
+  computed: {
+    ...mapGetters([
+      'fullScreen'
+    ])
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.fullScreen) {
+      next(false)
+    } else {
+      next()
+    }
   },
   methods: {
     _getSingerList () {
