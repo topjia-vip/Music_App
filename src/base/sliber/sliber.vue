@@ -48,17 +48,6 @@ export default {
   }
 }
 </script>
-<style type="text/css">
-    .swiper-pagination-bullet {
-        opacity: 1;
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.5);
-    }
+<style scoped lang="stylus" rel="stylesheet/stylus">
 
-    .swiper-pagination-bullet-active {
-        opacity: 1;
-        background: #C20C0C;
-    }
 </style>

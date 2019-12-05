@@ -15,6 +15,7 @@
 
 <script type="text/ecmascript-6">
 import { prefixStyle } from 'common/js/dom'
+import { mapGetters } from 'vuex'
 
 const progressBtnWidth = 16
 const transform = prefixStyle('transform')
@@ -28,6 +29,11 @@ export default {
   },
   created () {
     this.touch = {}
+  },
+  computed: {
+    ...mapGetters([
+      'fullScreen'
+    ])
   },
   methods: {
     progressTouchStart (e) {
@@ -52,8 +58,6 @@ export default {
       const rect = this.$refs.progressBar.getBoundingClientRect()
       const offsetWidth = e.pageX - rect.left
       this._offset(offsetWidth)
-      // 这里当我们点击 progressBtn 的时候，e.offsetX 获取不对
-      // this._offset(e.offsetX)
       this._triggerPercent()
     },
     _triggerPercent () {
@@ -71,6 +75,12 @@ export default {
       if (newPercent >= 0 && !this.touch.initiated) {
         const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
         const offsetWidth = newPercent * barWidth
+        this._offset(offsetWidth)
+      }
+    },
+    fullScreen (newfullScreen) {
+      if (newfullScreen) {
+        const offsetWidth = Math.max(0, this.$refs.progress.clientWidth)
         this._offset(offsetWidth)
       }
     }

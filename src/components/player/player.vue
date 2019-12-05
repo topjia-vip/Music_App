@@ -93,7 +93,8 @@
             </div>
         </transition>
         <playlist ref="playlist" :songReady="songReady"></playlist>
-        <audio ref="audio" :src="currentSong.url" @error="error" @timeupdate="updateTime"
+        <audio ref="audio" :src="currentSong.url" @error="error" @canplaythrough="playSong" preload="auto"
+               @timeupdate="updateTime"
                @ended="end"></audio>
     </div>
 </template>
@@ -373,10 +374,17 @@ export default {
           const middleHeight = this.$refs.middle.clientHeight
           const cdHeight = this.$refs.middleL.children[0].clientHeight
           const playingLyricHeight = this.$refs.middleL.children[1].clientHeight
-          const marginTop = (middleHeight - cdHeight - playingLyricHeight) / 2
+          const marginTop = (middleHeight - cdHeight - playingLyricHeight) / 3
           this.$refs.middleL.style.marginTop = `${marginTop}px`
         }, 20)
       }
+    },
+    playSong () {
+      this.setPlayingState(true)
+      this.savePlayHistory(this.currentSong)
+      this.songReady = true
+      this.currentLyric.play()
+      this.$refs.audio.play()
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
@@ -388,6 +396,7 @@ export default {
   },
   watch: {
     currentSong (newSong, oldSong) {
+      this.setPlayingState(false)
       if (!newSong.id) {
         return
       }
@@ -415,18 +424,6 @@ export default {
     fullScreen () {
       // 居中cd
       this._initCdTop()
-    },
-    currentLyric (newCurrentLyric, oldCurrentLyric) {
-      if (newCurrentLyric && newCurrentLyric !== oldCurrentLyric) {
-        this.setPlayingState(true)
-        this.savePlayHistory(this.currentSong)
-        this.songReady = true
-        this.currentLyric.play()
-        this.$refs.audio.play()
-      } else {
-        this.songReady = false
-        this.$refs.audio.pause()
-      }
     }
   },
   components: {

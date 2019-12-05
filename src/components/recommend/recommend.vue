@@ -122,7 +122,6 @@ export default {
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
-          console.log(res)
           this.recommends = res.data
         }
       })
