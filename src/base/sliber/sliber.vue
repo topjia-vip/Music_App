@@ -30,13 +30,12 @@ export default {
           el: '.swiper-pagination'
         },
         autoplay: {
-          delay: 4000,
+          delay: 5000,
           stopOnLastSlide: false,
           disableOnInteraction: false
         },
-        speed: 500,
+        speed: 600,
         loop: true,
-        loopAdditionalSlides: 3,
         roundLengths: true
       }
     }

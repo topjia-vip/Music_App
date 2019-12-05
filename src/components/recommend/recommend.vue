@@ -91,10 +91,16 @@ export default {
       'fullScreen'
     ])
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      vm.$refs.sliderWrapper.swiper.autoplay.start()
+    })
+  },
   beforeRouteLeave (to, from, next) {
     if (this.fullScreen) {
       next(false)
     } else {
+      this.$refs.sliderWrapper.swiper.autoplay.stop()
       next()
     }
   },
