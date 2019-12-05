@@ -1,21 +1,18 @@
 <template>
     <!--推荐页面模块-->
     <div class="recommend" ref="recommend">
-        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
-            <sliber>
-                <div v-for="(item,index) in recommends" :key="index">
-                    <a :href="item.jumpInfo">
-                        <img @load="loadImage" class="needsclick" :src="item.picInfo" style="height: 150px">
-                    </a>
-                </div>
-            </sliber>
-        </div>
-        <h1 style="height: 65px" class="list-title" @click="changeSongList" ref="list">
-            {{this.isHotSongList?'热门':'最新'}}歌单推荐</h1>
-        <scroll ref="scroll" class="recommend-content" style="height: 100%" :data="discList">
+        <scroll ref="scroll" class="recommend-content" style="height: 100%" :listenScroll="listenScroll"
+                :probe-type="probetype"
+                :data="discList"
+                @scroll="nowScrollY">
             <div>
+                <div v-if="recommends.length" class="slider-wrapper" ref="slider_wrapper">
+                    <sliber ref="sliderWrapper" :list="recommends"></sliber>
+                </div>
                 <v-touch v-on:swipeleft="swiperleft">
                     <div class="recommend-list" ref="recommend_list">
+                        <h1 style="height: 65px" class="list-title" @click="changeSongList" ref="list">
+                            {{this.isHotSongList?'热门':'最新'}}歌单推荐</h1>
                         <transition
                                 name="fade"
                                 enter-active-class="fadeInRight"
@@ -42,6 +39,8 @@
                 <loading/>
             </div>
         </scroll>
+        <h1 v-show="showTitle" style="height: 65px" class="title" @click="changeSongList" ref="list">
+            {{this.isHotSongList?'热门':'最新'}}歌单推荐</h1>
         <router-view></router-view>
     </div>
 </template>
@@ -65,7 +64,9 @@ export default {
       isHotSongList: true,
       isShow: true,
       height: 0,
-      isHandleMini: false
+      isHandleMini: false,
+      showTitle: false,
+      scrollY: 0
     }
   },
   components: {
@@ -74,6 +75,8 @@ export default {
     Loading
   },
   created () {
+    this.probetype = 3
+    this.listenScroll = true
     this._getRecommend()
     this._getDiscList(5)
   },
@@ -96,12 +99,20 @@ export default {
     }
   },
   methods: {
+    nowScrollY (pos) {
+      this.scrollY = pos.y
+    },
     changeSongList () {
+      this.$refs.scroll.stop()
       this.isShow = false
       this.isHotSongList = !this.isHotSongList
       const sortId = this.isHotSongList ? 5 : 2
       setTimeout(() => {
-        this.$refs.scroll.scrollTo(0, 0, 0)
+        if (Math.abs(this.scrollY) < this.$refs.slider_wrapper.clientHeight) {
+          this.$refs.scroll.scrollTo(0, this.scrollY, 300)
+        } else {
+          this.$refs.scroll.scrollTo(0, -(this.$refs.slider_wrapper.clientHeight), 300)
+        }
         this._getDiscList(sortId)
       }, 500)
       setTimeout(() => {
@@ -111,6 +122,7 @@ export default {
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
+          console.log(res)
           this.recommends = res.data
         }
       })
@@ -150,10 +162,7 @@ export default {
     },
     handleHeight () {
       const baseHeight = this.$refs.recommend.clientHeight
-      const listHeight = this.$refs.list.clientHeight
-      // this.$refs.sliderWrapper.height = Math.floor(baseHeight * 0.20718)
-      // const sliderWrapperHeight = this.$refs.sliderWrapper.height
-      this.$refs.scroll.$el.style.height = `${(baseHeight - listHeight - 162.8)}px`
+      this.$refs.scroll.$el.style.height = `${(baseHeight - 12.8)}px`
     },
     selectItem (item) {
       this.$router.push({
@@ -167,6 +176,17 @@ export default {
     ...mapMutations({
       setDisc: 'SET_DISC'
     })
+  },
+  watch: {
+    scrollY (newY) {
+      if (newY < 0) {
+        if (Math.abs(newY) >= parseFloat(this.$refs.slider_wrapper.clientHeight)) {
+          this.showTitle = true
+        } else {
+          this.showTitle = false
+        }
+      }
+    }
   }
 }
 </script>
@@ -230,6 +250,17 @@ export default {
                     text-align: center;
                     font-size: 13px;
                     color: rgba(255, 255, 255, 0.5);
+
+        .title
+            top 0px
+            position absolute
+            width 100%
+            height 65px
+            line-height: 65px
+            text-align: center
+            font-size: $font-size-medium
+            color: $color-theme
+            background $color-background
 
         .loading-container
             position: absolute

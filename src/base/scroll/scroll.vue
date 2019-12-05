@@ -36,6 +36,10 @@ export default {
     pullDownRefresh: {
       type: Object,
       default: null
+    },
+    momentum: {
+      type: Boolean,
+      default: false
     }
   },
   mounted () {
@@ -81,6 +85,9 @@ export default {
     },
     refresh () {
       this.scroll && this.scroll.refresh()
+    },
+    stop () {
+      this.scroll && this.scroll.stop()
     },
     scrollTo () {
       this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)

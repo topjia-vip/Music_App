@@ -1,168 +1,64 @@
 <template>
-    <div class="slider" ref="slider">
-        <div class="slider-group" ref="sliderGroup">
-            <slot>
-            </slot>
-        </div>
-        <div class="dots">
-            <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"
-                  :key="index"></span>
-        </div>
-    </div>
+    <swiper :options="swiperOption" ref="mySwiper">
+        <swiper-slide v-for="(item, index) in list" :key="index">
+            <a :href="item.jumpInfo">
+                <img :src="item.picInfo" width="90%" height="100%" style="margin-left: 5%;border-radius: 8px">
+            </a>
+        </swiper-slide>
+        <div class="swiper-pagination" slot="pagination"></div>
+    </swiper>
 </template>
+<script>
+import 'swiper/dist/css/swiper.css'
 
-<script type="text/ecmascript-6">
-import { addClass } from 'common/js/dom'
-import BScroll from 'better-scroll'
+import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
 export default {
-  name: 'slider',
   props: {
-    loop: {
-      type: Boolean,
-      default: true
-    },
-    autoPlay: {
-      type: Boolean,
-      default: true
-    },
-    interval: {
-      type: Number,
-      default: 4000
+    list: {
+      type: Array
     }
+  },
+  components: {
+    swiper,
+    swiperSlide
   },
   data () {
     return {
-      dots: [],
-      currentPageIndex: 0
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination'
+        },
+        autoplay: {
+          delay: 4000,
+          stopOnLastSlide: false,
+          disableOnInteraction: false
+        },
+        speed: 500,
+        loop: true,
+        loopAdditionalSlides: 3,
+        roundLengths: true
+      }
     }
   },
-  mounted () {
-    setTimeout(() => {
-      this._setSliderWidth()
-      this._initDots()
-      this._initSlider()
-      if (this.autoPlay) {
-        this._play()
-      }
-    }, 20)
-    window.addEventListener('resize', () => {
-      if (!this.slider) {
-        return
-      }
-      this._setSliderWidth(true)
-      this.slider.refresh()
-    })
-  },
-  destroyed () {
-    clearTimeout(this.timer)
-  },
-  methods: {
-    _setSliderWidth (isResize) {
-      this.children = this.$refs.sliderGroup.children
-
-      let width = 0
-      let sliderWidth = this.$refs.slider.clientWidth
-      for (let i = 0; i < this.children.length; i++) {
-        let child = this.children[i]
-        addClass(child, 'slider-item')
-
-        child.style.width = sliderWidth + 'px'
-        width += sliderWidth
-      }
-      if (this.loop && !isResize) {
-        width += 2 * sliderWidth
-      }
-      this.$refs.sliderGroup.style.width = width + 'px'
-    },
-    _initSlider () {
-      this.slider = new BScroll(this.$refs.slider, {
-        scrollX: true,
-        scrollY: false,
-        momentum: false,
-        probeType: 2,
-        snap: {
-          loop: this.loop,
-          threshold: 0.1,
-          speed: 400
-        }
-      })
-
-      this.slider.on('scrollEnd', () => {
-        let pageIndex = this.slider.getCurrentPage().pageX
-        this.currentPageIndex = pageIndex
-
-        if (this.autoPlay) {
-          clearTimeout(this.timer)
-          this._play()
-        }
-      })
-    },
-    _initDots () {
-      this.dots = new Array(this.children.length)
-    },
-    _play () {
-      let pageIndex = this.currentPageIndex + 1
-      let childrenLength = this.dots.length
-      if (pageIndex >= childrenLength) {
-        pageIndex = 0
-      }
-      this.timer = setTimeout(() => {
-        this.slider.next()
-      }, this.interval)
-    },
-    destroyed () {
-      clearTimeout(this.timer)
+  computed: {
+    swiper () {
+      return this.$refs.mySwiper.swiper
     }
   }
 }
 </script>
+<style type="text/css">
+    .swiper-pagination-bullet {
+        opacity: 1;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.5);
+    }
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
-    @import "~common/stylus/variable"
-
-    .slider
-        min-height: 1px
-
-        .slider-group
-            position: relative
-            overflow: hidden
-            white-space: nowrap
-
-            .slider-item
-                float: left
-                box-sizing: border-box
-                overflow: hidden
-                text-align: center
-
-                a
-                    display: block
-                    width: 100%
-                    overflow: hidden
-                    text-decoration: none
-
-                img
-                    display: block
-                    width: 100%
-
-        .dots
-            position: absolute
-            right: 0
-            left: 0
-            bottom: 12px
-            text-align: center
-            font-size: 0
-
-            .dot
-                display: inline-block
-                margin: 0 4px
-                width: 8px
-                height: 8px
-                border-radius: 50%
-                background: $color-text-l
-
-                &.active
-                    width: 20px
-                    border-radius: 5px
-                    background: $color-text-ll
+    .swiper-pagination-bullet-active {
+        opacity: 1;
+        background: #C20C0C;
+    }
 </style>
