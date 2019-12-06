@@ -391,8 +391,8 @@ export default {
         this.setPlayingState(true)
         this.savePlayHistory(this.currentSong)
         this.songReady = true
-        this.currentLyric.play()
         this.$refs.audio.play()
+        this.currentLyric.play()
         this.firstPlay = false
       }
     },

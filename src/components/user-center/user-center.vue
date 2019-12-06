@@ -37,10 +37,8 @@ import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import NoResult from 'base/no-result/no-result'
 import Song from 'common/js/song'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { playlistMixin } from 'common/js/mixin'
-import { getSongPlayVkey } from '../../api/song'
-import { ERR_OK } from '../../api/config'
 import Loading from '../../base/loading/loading'
 
 export default {
@@ -87,9 +85,6 @@ export default {
       next()
     }
   },
-  mounted () {
-    this._initSongList()
-  },
   methods: {
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
@@ -106,26 +101,6 @@ export default {
     back () {
       this.$router.back()
     },
-    _initSongList () {
-      let favoriteListSongMids = this.getSongMids(this.favoriteList)
-      let playHistorySongMids = this.getSongMids(this.playHistory)
-      if (this.favoriteList.length > 0) {
-        this.isShow = true
-        getSongPlayVkey(favoriteListSongMids).then(res => {
-          this.isShow = false
-          if (res.code === ERR_OK) {
-            this.setFavoriteList(res.data)
-          }
-        })
-      }
-      if (this.playHistory.length > 0) {
-        getSongPlayVkey(playHistorySongMids).then(res => {
-          if (res.code === ERR_OK) {
-            this.setPlayHistory(res.data)
-          }
-        })
-      }
-    },
     random () {
       let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
       if (list.length === 0) {
@@ -138,24 +113,6 @@ export default {
         list
       })
     },
-    getSongMids (songs) {
-      let songMids = '['
-      for (let i = 0; i < songs.length; i++) {
-        if (i !== songs.length - 1) {
-          songMids += '"' + songs[i].mid + '",'
-        } else {
-          songMids += '"' + songs[i].mid + '"]'
-        }
-      }
-      if (songMids === '[') {
-        return ''
-      }
-      return songMids
-    },
-    ...mapMutations({
-      setFavoriteList: 'MODIFY_FAVORITE_LIST_SONG_PLAY_URL',
-      setPlayHistory: 'MODIFY_PLAY_HISTORY_SONG_PLAY_URL'
-    }),
     ...mapActions([
       'insertSong',
       'randomPlay'

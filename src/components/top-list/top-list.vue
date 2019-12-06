@@ -16,11 +16,11 @@ export default {
   name: 'toplist',
   computed: {
     title () {
-      return this.topList.topTitle
+      return `${this.topList.topTitle}(${this.topList.updateTips})`
     },
     bgImage () {
       if (this.songs.length) {
-        return this.songs[0].image
+        return this.topList.rankSong[0].songPic
       }
       return ''
     },
@@ -47,11 +47,11 @@ export default {
   },
   methods: {
     _getMusicList () {
-      if (!this.topList.id) {
+      if (!this.topList.topId) {
         this.$router.push('/rank')
         return
       }
-      getMusicList(this.topList.id).then((res) => {
+      getMusicList(this.topList.topId).then((res) => {
         if (res.code === ERR_OK) {
           this.songs = this._normalizeSongs(res.data)
         }
