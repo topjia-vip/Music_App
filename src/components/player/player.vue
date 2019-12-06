@@ -48,7 +48,8 @@
                     <div class="progress-wrapper">
                         <span class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
+                            <progress-bar :percent="percent" @percentChange="onProgressBarChange"
+                                          @percentMove="onProgressBarMove"></progress-bar>
                         </div>
                         <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
@@ -317,6 +318,12 @@ export default {
         this.currentLyric.seek(currentTime * 1000)
       }
     },
+    onProgressBarMove (percent) {
+      const currentTime = this.currentSong.duration * percent
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
+      }
+    },
     getLyric () {
       if (this.sequenceList.length === 0) {
         return
@@ -380,11 +387,16 @@ export default {
       }
     },
     playSong () {
-      this.setPlayingState(true)
-      this.savePlayHistory(this.currentSong)
-      this.songReady = true
-      this.currentLyric.play()
-      this.$refs.audio.play()
+      if (this.firstPlay) {
+        this.setPlayingState(true)
+        this.savePlayHistory(this.currentSong)
+        this.songReady = true
+        setTimeout(() => {
+          this.currentLyric.play()
+          this.$refs.audio.play()
+        }, 200)
+        this.firstPlay = false
+      }
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
@@ -414,6 +426,7 @@ export default {
       }
       clearTimeout(this.timer)
       this.getLyric()
+      this.firstPlay = true
     },
     playing (newPlaying) {
       const audio = this.$refs.audio
@@ -421,8 +434,11 @@ export default {
         newPlaying ? audio.play() : audio.pause()
       })
     },
-    fullScreen () {
+    fullScreen (s) {
       // 居中cd
+      if (s) {
+        this.showCdOrLyric('cd')
+      }
       this._initCdTop()
     }
   },

@@ -87,6 +87,9 @@ export default {
       next()
     }
   },
+  mounted () {
+    this._initSongList()
+  },
   methods: {
     handlePlaylist (playlist) {
       const bottom = playlist.length > 0 ? '60px' : ''
@@ -103,33 +106,36 @@ export default {
     back () {
       this.$router.back()
     },
-    random () {
-      this.isShow = true
-      let songMids
-      if (this.currentIndex === 0) {
-        songMids = this.getSongMids(this.favoriteList)
-      } else {
-        songMids = this.getSongMids(this.playHistory)
-      }
-      getSongPlayVkey(songMids).then(res => {
-        if (res.code === ERR_OK) {
-          if (this.currentIndex === 0) {
+    _initSongList () {
+      let favoriteListSongMids = this.getSongMids(this.favoriteList)
+      let playHistorySongMids = this.getSongMids(this.playHistory)
+      if (this.favoriteList.length > 0) {
+        this.isShow = true
+        getSongPlayVkey(favoriteListSongMids).then(res => {
+          this.isShow = false
+          if (res.code === ERR_OK) {
             this.setFavoriteList(res.data)
-          } else {
+          }
+        })
+      }
+      if (this.playHistory.length > 0) {
+        getSongPlayVkey(playHistorySongMids).then(res => {
+          if (res.code === ERR_OK) {
             this.setPlayHistory(res.data)
           }
-        }
-        this.isShow = false
-        let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
-        if (list.length === 0) {
-          return
-        }
-        list = list.map((song) => {
-          return new Song(song)
         })
-        this.randomPlay({
-          list
-        })
+      }
+    },
+    random () {
+      let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
+      if (list.length === 0) {
+        return
+      }
+      list = list.map((song) => {
+        return new Song(song)
+      })
+      this.randomPlay({
+        list
       })
     },
     getSongMids (songs) {
@@ -140,6 +146,9 @@ export default {
         } else {
           songMids += '"' + songs[i].mid + '"]'
         }
+      }
+      if (songMids === '[') {
+        return ''
       }
       return songMids
     },

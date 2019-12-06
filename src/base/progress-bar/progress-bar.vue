@@ -48,6 +48,9 @@ export default {
       const deltaX = e.touches[0].pageX - this.touch.startX
       const offsetWidth = Math.min(this.$refs.progressBar.clientWidth - progressBtnWidth,
         Math.max(0, this.touch.left + deltaX))
+      const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
+      const percent = this.$refs.progress.clientWidth / barWidth
+      this.$emit('percentMove', percent)
       this._offset(offsetWidth)
     },
     progressTouchEnd () {

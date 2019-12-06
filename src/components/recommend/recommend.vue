@@ -93,7 +93,9 @@ export default {
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
-      vm.$refs.sliderWrapper.swiper.autoplay.start()
+      if (vm.$refs.sliderWrapper) {
+        vm.$refs.sliderWrapper.swiper.autoplay.start()
+      }
     })
   },
   beforeRouteLeave (to, from, next) {

@@ -141,6 +141,7 @@ export default {
             position: relative
             height: 44px
             text-align: center
+            margin-top: 30px
 
             .title
                 line-height: 44px
@@ -163,6 +164,7 @@ export default {
 
         .shortcut
             .list-wrapper
+                margin-top: 30px
                 position: absolute
                 top: 165px
                 bottom: 0
