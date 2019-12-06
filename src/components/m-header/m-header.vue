@@ -1,6 +1,6 @@
 <template>
     <div class="m-header">
-        <h1 class="text">轻音乐</h1>
+        <h1 class="text">悦音乐</h1>
         <router-link tag="div" class="mine" to="/user">
             <i class="icon-mine"></i>
         </router-link>

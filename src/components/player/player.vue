@@ -81,7 +81,7 @@
                 </div>
                 <div class="text">
                     <h2 class="name" v-html="currentSong.name"></h2>
-                    <p class="desc" v-html="currentSong.singer"></p>
+                    <p class="desc" v-html="playingLyric"></p>
                 </div>
                 <div class="control">
                     <progress-circle :radius="radius" :percent="percent">
@@ -391,10 +391,8 @@ export default {
         this.setPlayingState(true)
         this.savePlayHistory(this.currentSong)
         this.songReady = true
-        setTimeout(() => {
-          this.currentLyric.play()
-          this.$refs.audio.play()
-        }, 200)
+        this.currentLyric.play()
+        this.$refs.audio.play()
         this.firstPlay = false
       }
     },
