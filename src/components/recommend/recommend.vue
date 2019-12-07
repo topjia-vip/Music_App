@@ -25,8 +25,8 @@
                                         <img width="60" height="60" v-lazy="item.imgUrl" style="border-radius: 5px"/>
                                     </div>
                                     <div class="text">
-                                        <h2 class="name" v-html="item.name"></h2>
-                                        <p class="desc" v-html="item.dissName"></p>
+                                        <h2 class="name" v-html="item.dissName"></h2>
+                                        <p class="desc" v-html="item.name"></p>
                                     </div>
                                 </li>
                                 <p v-show="discList.length" class="tip-title">😔已经到底了哦，没有更多歌单了</p>

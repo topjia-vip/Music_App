@@ -15,6 +15,7 @@ import Singer from '../../common/js/singer'
 import ListView from '../../base/listview/listview'
 import { mapGetters, mapMutations } from 'vuex'
 import { playlistMixin } from '../../common/js/mixin'
+import pinyin from 'js-pinyin'
 
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
@@ -54,6 +55,7 @@ export default {
       })
     },
     _normalizeSinger (list) {
+      pinyin.setOptions({ checkPolyphone: false, charCase: 0 })
       let map = {
         hot: {
           title: HOT_NAME,
@@ -67,7 +69,7 @@ export default {
             id: item.singerMid
           }))
         }
-        const key = item.index
+        const key = pinyin.getCamelChars(item.singerName).substring(0, 1)
         if (!map[key]) {
           map[key] = {
             title: key,

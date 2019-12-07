@@ -10,7 +10,7 @@
                     </h1>
                 </div>
                 <scroll ref="listContent" :data="sequenceList" class="list-content" :refreshDelay="refreshDelay">
-                    <transition-group name="list" tag="ul">
+                    <transition-group name="list" tag="ul" ref="transition_group">
                         <li :key="item.id" ref="listItem" class="item" v-for="(item,index) in sequenceList"
                             @click="selectItem(item,index)">
                             <i class="current">
@@ -18,11 +18,11 @@
                             </i>
                             <span class="text" :style="getCurrentText(item)">{{item.name}}</span>
                             <span @click.stop="toggleFavorite(item)" class="like">
-                <i :class="getFavoriteIcon(item)"></i>
-              </span>
+                                <i :class="getFavoriteIcon(item)"></i>
+                            </span>
                             <span @click.stop="deleteOne(item)" class="delete">
-                <i class="icon-delete"></i>
-              </span>
+                                <i class="icon-delete"></i>
+                            </span>
                         </li>
                     </transition-group>
                 </scroll>
@@ -111,12 +111,13 @@ export default {
       }
       this.setCurrentIndex(index)
       this.setPlayingState(true)
+      this.$emit('selectItem')
     },
     scrollToCurrent (current) {
       const index = this.sequenceList.findIndex((song) => {
         return current.id === song.id
       })
-      this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300)
+      this.$refs.listContent.scrollToElement(this.$refs.transition_group.children[index].elm, 300)
     },
     deleteOne (item) {
       this.deleteSong(item)

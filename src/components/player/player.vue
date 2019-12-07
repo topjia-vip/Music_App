@@ -93,7 +93,7 @@
                 </div>
             </div>
         </transition>
-        <playlist ref="playlist" :songReady="songReady"></playlist>
+        <playlist ref="playlist" @selectItem="selectItem" :songReady="songReady"></playlist>
         <audio ref="audio" :src="currentSong.url" @error="error" @canplaythrough="playSong" preload="auto"
                @timeupdate="updateTime"
                @ended="end"></audio>
@@ -168,6 +168,9 @@ export default {
       if (this.fullScreen) {
         this.back()
       }
+    },
+    selectItem () {
+      this.currentLyric.togglePlay()
     },
     showCdOrLyric (type) {
       this.currentShow = type
@@ -393,6 +396,7 @@ export default {
         this.songReady = true
         this.$refs.audio.play()
         this.currentLyric.play()
+        this.currentLyric.seek(0)
         this.firstPlay = false
       }
     },
@@ -406,7 +410,7 @@ export default {
   },
   watch: {
     currentSong (newSong, oldSong) {
-      this.setPlayingState(false)
+      console.log(newSong)
       if (!newSong.id) {
         return
       }
@@ -418,6 +422,7 @@ export default {
       }
       if (this.currentLyric) {
         this.currentLyric.stop()
+        this.currentLyric = null
         this.currentTime = 0
         this.playingLyric = ''
         this.currentLineNum = 0
